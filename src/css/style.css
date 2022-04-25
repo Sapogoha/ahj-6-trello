@@ -1,0 +1,60 @@
+* {
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  padding-top: 50px;
+  width: 100%;
+  height: 100%;
+  background: #908f8c;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  font-size: medium;
+  margin: 0px auto;
+}
+
+.board {
+  width: 1000px;
+  display: flex;
+  align-items: flex-start;
+  border-radius: 15px;
+  text-align: center;
+  margin: 0px;
+}
+
+.column {
+  width: 300px;
+  background-color: #ffffffa2;
+  border: 2px solid #000000;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.column:nth-child(2n) {
+  margin: 0px 50px;
+}
+
+.column__header {
+  text-transform: uppercase;
+}
+
+.tasks-list {
+  min-height: 50px;
+  padding: 20px;
+}
+
+.task {
+  list-style: none;
+  padding: 10px;
+  margin: 10px 0px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 5px 20px 0 #0000003d;
+  cursor: grab;
+}
+
+.column__add {
+  cursor: pointer;
+}
