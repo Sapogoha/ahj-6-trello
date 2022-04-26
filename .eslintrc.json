@@ -7,6 +7,7 @@
   },
   "rules": {
     "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
-    "no-alert": "off"
+    "no-alert": "off",
+    "class-methods-use-this": "off"
   }
 }

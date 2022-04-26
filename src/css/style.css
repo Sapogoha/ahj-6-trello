@@ -57,4 +57,73 @@ body {
 
 .column__add {
   cursor: pointer;
+  align-items: center;
+}
+
+.add-form__textarea {
+  resize: vertical;
+  width: 276px;
+  padding: 10px;
+  margin: 10px 0px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 5px 20px 0 #0000003d;
+}
+
+.add-form__form-control {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.add-form__button {
+  display: block;
+  width: 100px;
+  height: 40px;
+  font-size: medium;
+  padding: 0px, 10px;
+  border-radius: 10px;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.add-form__submit-button {
+  background-color: #18d43de1;
+}
+
+.add-form__close-button {
+  background-color: #db7f6ae1;
+}
+
+.error-empty {
+  margin-top: 5px;
+  padding: 5px;
+  border-radius: 10px;
+  color: #ffffff;
+  text-align: center;
+  background-color: #db7f6ae1;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  z-index: 9999;
+  display: block;
+  border-radius: 5px;
+  width: 17px;
+  height: 17px;
+  background-color: #ececec9b;
+  color: #353738;
+  margin-left: 206px;
+  margin-top: -10px;
+  cursor: pointer;
+}
+
+.close::after {
+  content: '✕';
 }
