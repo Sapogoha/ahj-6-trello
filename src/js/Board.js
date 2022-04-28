@@ -5,33 +5,43 @@ export default class Board {
   constructor() {
     this.board = null;
 
-    // this.tasksTodo = [];
-    // this.tasksInP = [];
-    // this.tasksDone = [];
-    // this.tasks = [this.tasksTodo, this.tasksInP, this.tasksDone];
+    this.tasksTodo = [];
+    this.tasksInP = [];
+    this.tasksDone = [];
+    this.tasks = [this.tasksTodo, this.tasksInP, this.tasksDone];
     this.addInput = this.addInput.bind(this);
     this.closeForm = this.closeForm.bind(this);
     this.addNewTask = this.addNewTask.bind(this);
     this.onTaskEnter = this.onTaskEnter.bind(this);
-    // this.onTaskLeave = this.onTaskLeave.bind(this);
-    // this.removeTask = this.removeTask.bind(this);
-    // this.saveTasks = this.saveTasks.bind(this);
-    // this.loadTasks = this.loadTasks.bind(this);
+    this.removeTask = this.removeTask.bind(this);
+    this.saveListOfTasks = this.saveListOfTasks.bind(this);
+    this.loadListOfTasks = this.loadListOfTasks.bind(this);
     this.mouseDown = this.mouseDown.bind(this);
     this.dragMove = this.dragMove.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
+    this.drawSavedTasks = this.drawSavedTasks.bind(this);
     this.showPossiblePlace = this.showPossiblePlace.bind(this);
   }
 
   init() {
-    // document.addEventListener('DOMContentLoaded', this.loadTasks);
-    // const tasksLoaded = localStorage.getItem('board');
-    // this.tasks = JSON.parse(tasksLoaded);
-
+    this.loadListOfTasks();
     this.drawBoard();
+    this.drawSavedTasks();
     const addList = this.board.querySelectorAll('.column__add');
     [...addList].forEach((el) => el.addEventListener('click', this.addInput));
-    // window.addEventListener('beforeunload', this.saveTasks);
+    window.addEventListener('beforeunload', this.saveListOfTasks);
+  }
+
+  loadListOfTasks() {
+    const previouslySaved = localStorage.getItem('tasks');
+
+    if (previouslySaved !== null) {
+      this.tasks = JSON.parse(previouslySaved);
+    }
+  }
+
+  saveListOfTasks() {
+    localStorage.setItem('tasks', JSON.stringify(this.tasks));
   }
 
   drawBoard() {
@@ -56,10 +66,33 @@ export default class Board {
     document.querySelector('body').appendChild(this.board);
   }
 
+  drawSavedTasks() {
+    const parents = ['.todo', '.in-progress', '.done'];
+
+    for (let i = 0; i < parents.length; i += 1) {
+      const parent = this.board.querySelector(parents[i]);
+
+      this.tasks[i].forEach((item) => {
+        new Card(parent, item).addTask();
+
+        if (i === 0) {
+          this.tasksTodo.push(item);
+        }
+        if (i === 1) {
+          this.tasksInP.push(item);
+        }
+        if (i === 2) {
+          this.tasksDone.push(item);
+        }
+      });
+
+      this.addListeners();
+    }
+  }
+
   addInput(event) {
     const newCardForm = document.createElement('form');
     newCardForm.classList.add('column__add-form');
-
     newCardForm.innerHTML = `
     <textarea class="add-form__textarea" type ="text" placeholder="Enter a title for this card"></textarea>
     <div class="add-form__form-control">
@@ -67,7 +100,6 @@ export default class Board {
       <button class="add-form__close-button add-form__button">Close</button>
     </div>
  `;
-
     const closestColumn = event.target.closest('.column');
 
     event.target.replaceWith(newCardForm);
@@ -101,16 +133,6 @@ export default class Board {
     if (/\S.*/.test(task)) {
       new Card(parent, task).addTask();
 
-      // if (parent.classList.contains('todo')) {
-      //   this.tasksTodo.push(task);
-      // }
-      // if (parent.classList.contains('in-progress')) {
-      //   this.tasksInP.push(task);
-      // }
-      // if (parent.classList.contains('done')) {
-      //   this.tasksDone.push(task);
-      // }
-
       const columnAdd = document.createElement('div');
       columnAdd.classList.add('column__add');
       columnAdd.textContent = '+ Add another card';
@@ -121,13 +143,49 @@ export default class Board {
       closestColumn.appendChild(columnAdd);
       columnAdd.addEventListener('click', this.addInput);
 
-      const taskList = this.board.querySelectorAll('.task');
-      [...taskList].forEach((el) => el.addEventListener('mouseover', this.onTaskEnter));
-      [...taskList].forEach((el) => el.addEventListener('mouseleave', this.onTaskLeave));
-      [...taskList].forEach((el) => el.addEventListener('mousedown', this.mouseDown));
+      this.addListeners();
+
+      if (parent.classList.contains('todo')) {
+        this.tasksTodo.push(task);
+      }
+      if (parent.classList.contains('in-progress')) {
+        this.tasksInP.push(task);
+      }
+      if (parent.classList.contains('done')) {
+        this.tasksDone.push(task);
+      }
+      this.tasks = [this.tasksTodo, this.tasksInP, this.tasksDone];
     } else {
       showError(closestColumn.querySelector('.column__add-form'), 'empty');
     }
+  }
+
+  addListeners() {
+    const taskList = this.board.querySelectorAll('.task');
+    [...taskList].forEach((el) => el.addEventListener('mouseover', this.onTaskEnter));
+    [...taskList].forEach((el) => el.addEventListener('mouseleave', this.onTaskLeave));
+    [...taskList].forEach((el) => el.addEventListener('mousedown', this.mouseDown));
+  }
+
+  removeTask(event) {
+    const task = event.target.closest('.task');
+    const parent = event.target.closest('.tasks-list');
+
+    parent.removeChild(task);
+
+    const text = task.textContent;
+
+    if (parent.classList.contains('todo')) {
+      this.tasksTodo.splice(this.tasksTodo.indexOf(text), 1);
+    }
+    if (parent.classList.contains('in-progress')) {
+      this.tasksInP.splice(this.tasksInP.indexOf(text), 1);
+    }
+    if (parent.classList.contains('done')) {
+      this.tasksDone.splice(this.tasksDone.indexOf(text), 1);
+    }
+
+    this.tasks = [this.tasksTodo, this.tasksInP, this.tasksDone];
   }
 
   onTaskEnter(event) {
@@ -153,45 +211,32 @@ export default class Board {
     event.target.removeChild(event.target.querySelector('.close'));
   }
 
-  removeTask(event) {
-    const task = event.target.closest('.task');
-    const taskList = event.target.closest('.tasks-list');
-
-    taskList.removeChild(task);
-  }
-
-  // loadTasks() {
-  //   const tasksLoaded = localStorage.getItem('board');
-  //   if (tasksLoaded) {
-  //     this.tasks = JSON.parse(tasksLoaded);
-  //   }
-  //   this.drawBoard();
-  //   this.addListener();
-  // }
-
-  // saveTasks() {
-  //   localStorage.setItem('board', JSON.stringify(this.tasks));
-  // }
-
   mouseDown(event) {
-    this.draggedEl = event.target;
-    this.ghostEl = event.target.cloneNode(true);
-    this.ghostEl.removeChild(this.ghostEl.querySelector('.close'));
-    this.ghostEl.classList.add('dragged');
-    this.ghostEl.style.width = `${this.draggedEl.offsetWidth}px`;
-    this.ghostEl.style.height = `${this.draggedEl.offsetHeight}px`;
-    document.body.appendChild(this.ghostEl);
+    if (event.target.classList.contains('task')) {
+      this.draggedEl = event.target;
+      this.ghostEl = event.target.cloneNode(true);
+      this.ghostEl.removeChild(this.ghostEl.querySelector('.close'));
+      this.ghostEl.classList.add('dragged');
+      this.ghostEl.classList.add('ghost');
+      this.ghostEl.style.width = `${this.draggedEl.offsetWidth}px`;
+      this.ghostEl.style.height = `${this.draggedEl.offsetHeight}px`;
+      document.body.appendChild(this.ghostEl);
 
-    const { top, left } = this.draggedEl.getBoundingClientRect();
-    this.ghostEl.style.top = `${top - 1.5 * this.draggedEl.offsetHeight}px`;
-    this.ghostEl.style.left = `${left - this.board.offsetWidth - 100}px`;
-    this.draggedEl.style.display = 'none';
-    document.addEventListener('mousemove', this.dragMove);
-    document.addEventListener('mousemove', this.showPossiblePlace);
-    document.addEventListener('mouseup', this.mouseUp);
+      const { top, left } = event.target.getBoundingClientRect();
+      this.top = event.pageY - top;
+      this.left = event.pageX - left;
 
-    // this.draggedEl.style.width = `${this.draggedEl.offsetWidth}px`;
-    // this.draggedEl.style.height = `${this.draggedEl.offsetHeight}px`;
+      this.ghostEl.style.top = `${top - this.draggedEl.offsetHeight}px`;
+      this.ghostEl.style.left = `${left - this.board.offsetWidth}px`;
+
+      this.ghostEl.style.width = `${this.draggedEl.offsetWidth}px`;
+      this.ghostEl.style.height = `${this.draggedEl.offsetHeight}px`;
+
+      this.draggedEl.style.display = 'none';
+      document.addEventListener('mousemove', this.dragMove);
+      document.addEventListener('mousemove', this.showPossiblePlace);
+      document.addEventListener('mouseup', this.mouseUp);
+    }
   }
 
   dragMove(event) {
@@ -200,18 +245,15 @@ export default class Board {
       return;
     }
 
-    this.ghostEl.style.left = `${
-      event.pageX - this.board.offsetWidth - this.ghostEl.offsetWidth
-    }px`;
-    this.ghostEl.style.top = `${
-      event.pageY - 1.5 * this.ghostEl.offsetHeight
-    }px`;
+    this.ghostEl.style.top = `${event.pageY - this.top}px`;
+    this.ghostEl.style.left = `${event.pageX - this.left}px`;
   }
 
   mouseUp(event) {
     if (!this.draggedEl) {
       return;
     }
+
     const closest = document.elementFromPoint(event.clientX, event.clientY);
 
     if (closest) {
@@ -222,6 +264,7 @@ export default class Board {
       } else if (closestList.contains(this.newPlace)) {
         this.newPlace.replaceWith(this.draggedEl);
       }
+
       this.draggedEl.style.display = 'flex';
       document.body.removeChild(document.body.querySelector('.dragged'));
 
@@ -234,6 +277,7 @@ export default class Board {
     if (!this.draggedEl) {
       return;
     }
+
     const closestColumn = event.target.closest('.tasks-list');
 
     if (closestColumn) {
@@ -249,15 +293,16 @@ export default class Board {
       if (!this.newPlace) {
         this.newPlace = document.createElement('div');
         this.newPlace.classList.add('task-list__new-place');
-        this.newPlace.style.width = `${this.ghostEl.offsetWidth}px`;
-        this.newPlace.style.height = `${this.ghostEl.offsetHeight}px`;
       }
+
+      this.newPlace.style.width = `${this.ghostEl.offsetWidth}px`;
+      this.newPlace.style.height = `${this.ghostEl.offsetHeight}px`;
 
       const itemIndex = allPos.findIndex((item) => item > event.pageY);
       if (itemIndex !== -1) {
-        allTasks[itemIndex - 1].before(this.newPlace);
+        closestColumn.insertBefore(this.newPlace, allTasks[itemIndex - 1]);
       } else {
-        closestColumn.append(this.newPlace);
+        closestColumn.appendChild(this.newPlace);
       }
     }
   }

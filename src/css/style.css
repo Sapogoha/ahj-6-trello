@@ -10,36 +10,26 @@ body {
   background: #908f8c;
   display: flex;
   justify-content: center;
+
   text-align: center;
   font-size: medium;
   margin: 0px auto;
 }
 
-/* section {
-  position: relative;
-} */
-
-/* section:after {
-  content: '';
-  width: 100%;
-  order: 0;
-} */
-
 .board {
   width: 1000px;
   display: flex;
   align-items: flex-start;
-  border-radius: 15px;
+  border-radius: 5px;
   text-align: center;
-  margin: 0px;
-  /* order: 0; */
+  margin: 0px auto;
 }
 
 .column {
   width: 300px;
   background-color: #ffffffa2;
-  border: 2px solid #000000;
-  border-radius: 15px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
   padding: 10px;
   position: relative;
 }
@@ -61,7 +51,7 @@ body {
   list-style: none;
   padding: 10px;
   margin: 10px 0px;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #ffffff;
   box-shadow: 0 5px 20px 0 #0000003d;
   cursor: grab;
@@ -71,20 +61,18 @@ body {
 }
 
 .dragged {
-  /* width: 236px;
-  height: 38.5px; */
   list-style: none;
   padding: 10px;
   margin: 10px 0px;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #ffffff;
   box-shadow: 0 5px 20px 0 #0000003d;
-  cursor: grab;
+  cursor: grabbing;
   display: flex;
   justify-content: space-between;
-  position: relative;
+  position: absolute;
   opacity: 50%;
-  /* order: 1; */
+  transform: rotate(10deg);
 }
 
 .column__add {
@@ -97,7 +85,7 @@ body {
   width: 276px;
   padding: 10px;
   margin: 10px 0px;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #ffffff;
   box-shadow: 0 5px 20px 0 #0000003d;
 }
@@ -113,7 +101,7 @@ body {
   height: 40px;
   font-size: medium;
   padding: 0px, 10px;
-  border-radius: 10px;
+  border-radius: 5px;
   border: none;
   color: #ffffff;
   cursor: pointer;
@@ -130,7 +118,7 @@ body {
 .error-empty {
   margin-top: 5px;
   padding: 5px;
-  border-radius: 10px;
+  border-radius: 5px;
   color: #ffffff;
   text-align: center;
   background-color: #db7f6ae1;
@@ -145,8 +133,6 @@ body {
   height: 17px;
   background-color: #ececec9b;
   color: #353738;
-  /* margin-left: 206px;
-  margin-top: -10px; */
   cursor: pointer;
 }
 
@@ -159,6 +145,9 @@ body {
   position: relative;
   padding: 10px;
   margin: 10px 0px;
-  border-radius: 10px;
-  /* height: 50px; */
+  border-radius: 5px;
+}
+
+.add-form__textarea {
+  font-size: large;
 }
