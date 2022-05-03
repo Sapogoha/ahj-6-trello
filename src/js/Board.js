@@ -226,7 +226,7 @@ export default class Board {
       this.ghostEl.style.height = `${this.draggedEl.offsetHeight}px`;
 
       this.draggedEl.style.display = 'none';
-      document.addEventListener('mousemove', this.dragMove);
+      this.board.addEventListener('mousemove', this.dragMove);
       document.addEventListener('mousemove', this.showPossiblePlace);
       document.addEventListener('mouseup', this.mouseUp);
     }
@@ -242,28 +242,18 @@ export default class Board {
     this.ghostEl.style.left = `${event.pageX - this.left}px`;
   }
 
-  mouseUp(event) {
+  mouseUp() {
     if (!this.draggedEl) {
       return;
     }
 
-    const closest = document.elementFromPoint(event.clientX, event.clientY);
+    this.newPlace.replaceWith(this.draggedEl);
 
-    if (closest) {
-      const closestList = closest.closest('.tasks-list');
+    this.draggedEl.style.display = 'flex';
+    document.body.removeChild(document.body.querySelector('.dragged'));
 
-      if (!closestList) {
-        this.newPlace.remove();
-      } else if (closestList.contains(this.newPlace)) {
-        this.newPlace.replaceWith(this.draggedEl);
-      }
-
-      this.draggedEl.style.display = 'flex';
-      document.body.removeChild(document.body.querySelector('.dragged'));
-
-      this.ghostEl = null;
-      this.draggedEl = null;
-    }
+    this.ghostEl = null;
+    this.draggedEl = null;
   }
 
   showPossiblePlace(event) {
