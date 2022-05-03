@@ -41,6 +41,24 @@ export default class Board {
   }
 
   saveListOfTasks() {
+    this.tasksTodo = [];
+    this.tasksInP = [];
+    this.tasksDone = [];
+
+    const todo = this.board.querySelector('.todo');
+    const inP = this.board.querySelector('.in-progress');
+    const done = this.board.querySelector('.done');
+
+    const tasksTodo = [...todo.querySelectorAll('.task')];
+    const tasksInP = [...inP.querySelectorAll('.task')];
+    const tasksDone = [...done.querySelectorAll('.task')];
+
+    tasksTodo.forEach((task) => this.tasksTodo.push(task.textContent));
+    tasksInP.forEach((task) => this.tasksInP.push(task.textContent));
+    tasksDone.forEach((task) => this.tasksDone.push(task.textContent));
+
+    this.tasks = [this.tasksTodo, this.tasksInP, this.tasksDone];
+
     localStorage.setItem('tasks', JSON.stringify(this.tasks));
   }
 
@@ -144,17 +162,6 @@ export default class Board {
       columnAdd.addEventListener('click', this.addInput);
 
       this.addListeners();
-
-      if (parent.classList.contains('todo')) {
-        this.tasksTodo.push(task);
-      }
-      if (parent.classList.contains('in-progress')) {
-        this.tasksInP.push(task);
-      }
-      if (parent.classList.contains('done')) {
-        this.tasksDone.push(task);
-      }
-      this.tasks = [this.tasksTodo, this.tasksInP, this.tasksDone];
     } else {
       showError(closestColumn.querySelector('.column__add-form'), 'empty');
     }
@@ -172,20 +179,6 @@ export default class Board {
     const parent = event.target.closest('.tasks-list');
 
     parent.removeChild(task);
-
-    const text = task.textContent;
-
-    if (parent.classList.contains('todo')) {
-      this.tasksTodo.splice(this.tasksTodo.indexOf(text), 1);
-    }
-    if (parent.classList.contains('in-progress')) {
-      this.tasksInP.splice(this.tasksInP.indexOf(text), 1);
-    }
-    if (parent.classList.contains('done')) {
-      this.tasksDone.splice(this.tasksDone.indexOf(text), 1);
-    }
-
-    this.tasks = [this.tasksTodo, this.tasksInP, this.tasksDone];
   }
 
   onTaskEnter(event) {
