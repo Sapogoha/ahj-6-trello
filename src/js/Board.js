@@ -257,6 +257,7 @@ export default class Board {
   }
 
   showPossiblePlace(event) {
+    event.preventDefault();
     if (!this.draggedEl) {
       return;
     }
